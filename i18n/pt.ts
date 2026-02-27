@@ -60,6 +60,10 @@ export default {
     signOut: 'Sair',
     signOutMessage: 'Tem certeza que deseja sair?',
     language: 'Idioma',
+    theme: 'Tema',
+    themeLight: 'Claro',
+    themeDark: 'Escuro',
+    themeSystem: 'Sistema',
   },
 
   // Group form

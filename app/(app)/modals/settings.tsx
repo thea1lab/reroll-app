@@ -5,6 +5,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Radius, Spacing } from '@/constants/theme';
 import { useAuth } from '@/contexts/auth-context';
 import { useLanguage } from '@/contexts/language-context';
+import { useTheme } from '@/contexts/theme-context';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useRouter } from 'expo-router';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
@@ -13,13 +14,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const LANGUAGES = [
   { code: 'en', label: 'English' },
   { code: 'pt', label: 'Português' },
-];
+] as const;
+
+const THEMES = ['light', 'dark', 'system'] as const;
 
 export default function SettingsModal() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user, signOut } = useAuth();
   const { locale, setLocale, t } = useLanguage();
+  const { preference, setPreference } = useTheme();
   const tint = useThemeColor({}, 'tint');
   const tintLight = useThemeColor({}, 'tintLight');
   const surface = useThemeColor({}, 'surface');
@@ -89,6 +93,41 @@ export default function SettingsModal() {
                       lightColor={active ? tint : text}
                       darkColor={active ? tint : text}>
                       {lang.label}
+                    </ThemedText>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+
+          <View style={styles.languageSection}>
+            <ThemedText style={styles.languageLabel}>{t('settings.theme')}</ThemedText>
+            <View style={styles.languageRow}>
+              {THEMES.map((key) => {
+                const active = preference === key;
+                const label = t(
+                  key === 'light'
+                    ? 'settings.themeLight'
+                    : key === 'dark'
+                      ? 'settings.themeDark'
+                      : 'settings.themeSystem'
+                );
+                return (
+                  <Pressable
+                    key={key}
+                    style={[
+                      styles.langPill,
+                      {
+                        backgroundColor: active ? tintLight : 'transparent',
+                        borderColor: active ? tint : border,
+                      },
+                    ]}
+                    onPress={() => setPreference(key)}>
+                    <ThemedText
+                      style={[styles.langText, { color: active ? tint : text }]}
+                      lightColor={active ? tint : text}
+                      darkColor={active ? tint : text}>
+                      {label}
                     </ThemedText>
                   </Pressable>
                 );
