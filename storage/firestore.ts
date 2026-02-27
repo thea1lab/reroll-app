@@ -1,12 +1,28 @@
-import firestore from '@react-native-firebase/firestore';
+import { getApp } from '@react-native-firebase/app';
+import {
+  collection,
+  doc,
+  getFirestore,
+  onSnapshot,
+  orderBy,
+  query,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  getDocs,
+  where,
+  writeBatch,
+} from '@react-native-firebase/firestore';
 import type { Group, Recipe } from '@/constants/types';
 
-function groupsRef(userId: string) {
-  return firestore().collection('users').doc(userId).collection('groups');
+const db = getFirestore(getApp());
+
+function groupsCol(userId: string) {
+  return collection(db, 'users', userId, 'groups');
 }
 
-function recipesRef(userId: string) {
-  return firestore().collection('users').doc(userId).collection('recipes');
+function recipesCol(userId: string) {
+  return collection(db, 'users', userId, 'recipes');
 }
 
 // --- Groups ---
@@ -16,23 +32,19 @@ export function subscribeGroups(
   onNext: (groups: Group[]) => void,
   onError: (error: Error) => void
 ) {
-  return groupsRef(userId)
-    .orderBy('createdAt', 'asc')
-    .onSnapshot(
-      (snapshot) => {
-        const groups: Group[] = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Group[];
-        onNext(groups);
-      },
-      onError
-    );
+  const q = query(groupsCol(userId), orderBy('createdAt', 'asc'));
+  return onSnapshot(q, (snapshot) => {
+    const groups: Group[] = snapshot.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    })) as Group[];
+    onNext(groups);
+  }, onError);
 }
 
 export async function addGroupDoc(userId: string, group: Group): Promise<void> {
   const { id, ...data } = group;
-  await groupsRef(userId).doc(id).set(data);
+  await setDoc(doc(groupsCol(userId), id), data);
 }
 
 export async function updateGroupDoc(
@@ -40,19 +52,17 @@ export async function updateGroupDoc(
   id: string,
   updates: Partial<Pick<Group, 'name' | 'emoji'>> & { updatedAt: number }
 ): Promise<void> {
-  await groupsRef(userId).doc(id).update(updates);
+  await updateDoc(doc(groupsCol(userId), id), updates);
 }
 
 export async function deleteGroupDoc(userId: string, id: string): Promise<void> {
-  const batch = firestore().batch();
+  const batch = writeBatch(db);
 
-  // Delete the group
-  batch.delete(groupsRef(userId).doc(id));
+  batch.delete(doc(groupsCol(userId), id));
 
-  // Delete all recipes in this group
-  const recipesSnapshot = await recipesRef(userId).where('groupId', '==', id).get();
-  recipesSnapshot.docs.forEach((doc) => {
-    batch.delete(doc.ref);
+  const recipesSnapshot = await getDocs(query(recipesCol(userId), where('groupId', '==', id)));
+  recipesSnapshot.docs.forEach((d) => {
+    batch.delete(d.ref);
   });
 
   await batch.commit();
@@ -65,23 +75,19 @@ export function subscribeRecipes(
   onNext: (recipes: Recipe[]) => void,
   onError: (error: Error) => void
 ) {
-  return recipesRef(userId)
-    .orderBy('createdAt', 'asc')
-    .onSnapshot(
-      (snapshot) => {
-        const recipes: Recipe[] = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Recipe[];
-        onNext(recipes);
-      },
-      onError
-    );
+  const q = query(recipesCol(userId), orderBy('createdAt', 'asc'));
+  return onSnapshot(q, (snapshot) => {
+    const recipes: Recipe[] = snapshot.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    })) as Recipe[];
+    onNext(recipes);
+  }, onError);
 }
 
 export async function addRecipeDoc(userId: string, recipe: Recipe): Promise<void> {
   const { id, ...data } = recipe;
-  await recipesRef(userId).doc(id).set(data);
+  await setDoc(doc(recipesCol(userId), id), data);
 }
 
 export async function updateRecipeDoc(
@@ -89,40 +95,15 @@ export async function updateRecipeDoc(
   id: string,
   updates: Partial<Omit<Recipe, 'id' | 'createdAt'>>
 ): Promise<void> {
-  await recipesRef(userId).doc(id).update(updates);
+  await updateDoc(doc(recipesCol(userId), id), updates);
 }
 
 export async function deleteRecipeDoc(userId: string, id: string): Promise<void> {
-  await recipesRef(userId).doc(id).delete();
-}
-
-// --- Seed ---
-
-export async function seedInitialData(
-  userId: string,
-  groups: Group[],
-  recipes: Recipe[]
-): Promise<void> {
-  const batch = firestore().batch();
-
-  for (const group of groups) {
-    const { id, ...data } = group;
-    batch.set(groupsRef(userId).doc(id), data);
-  }
-  for (const recipe of recipes) {
-    const { id, ...data } = recipe;
-    batch.set(recipesRef(userId).doc(id), data);
-  }
-
-  await batch.commit();
+  await deleteDoc(doc(recipesCol(userId), id));
 }
 
 // --- ID generation ---
 
-export function generateFirestoreId(userId: string, collection: 'groups' | 'recipes'): string {
-  return firestore()
-    .collection('users')
-    .doc(userId)
-    .collection(collection)
-    .doc().id;
+export function generateFirestoreId(userId: string, col: 'groups' | 'recipes'): string {
+  return doc(collection(db, 'users', userId, col)).id;
 }

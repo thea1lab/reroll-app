@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import auth, { type FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { getApp } from '@react-native-firebase/app';
+import { getAuth, onAuthStateChanged, signInWithCredential, signOut as firebaseSignOut, GoogleAuthProvider, type User } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 interface AuthContextValue {
-  user: FirebaseAuthTypes.User | null;
+  user: User | null;
   isLoading: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -11,23 +12,26 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+const firebaseAuth = getAuth(getApp());
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    GoogleSignin.configure();
+    GoogleSignin.configure({
+      webClientId: '152660167338-s4cfbuueh11vv96vh9g3sluq4it0gmc9.apps.googleusercontent.com',
+    });
   }, []);
 
   useEffect(() => {
-    const unsubscribe = auth().onAuthStateChanged((firebaseUser) => {
+    return onAuthStateChanged(firebaseAuth, (firebaseUser) => {
       setUser(firebaseUser);
       setIsLoading(false);
     });
-    return unsubscribe;
   }, []);
 
-  const signInWithGoogle = async () => {
+  const handleSignInWithGoogle = async () => {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     const response = await GoogleSignin.signIn();
 
@@ -35,17 +39,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error('Google Sign-In failed: no ID token');
     }
 
-    const credential = auth.GoogleAuthProvider.credential(response.data.idToken);
-    await auth().signInWithCredential(credential);
+    const credential = GoogleAuthProvider.credential(response.data.idToken);
+    await signInWithCredential(firebaseAuth, credential);
   };
 
-  const signOut = async () => {
-    await auth().signOut();
+  const handleSignOut = async () => {
+    await firebaseSignOut(firebaseAuth);
     await GoogleSignin.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{ user, isLoading, signInWithGoogle: handleSignInWithGoogle, signOut: handleSignOut }}>
       {children}
     </AuthContext.Provider>
   );

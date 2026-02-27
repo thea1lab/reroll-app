@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
@@ -39,7 +39,9 @@ export default function LandingScreen() {
     try {
       setIsSigningIn(true);
       await signInWithGoogle();
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Sign-in error:', error);
+      Alert.alert('Sign-In Failed', error?.message || 'Something went wrong.');
       setIsSigningIn(false);
     }
   };

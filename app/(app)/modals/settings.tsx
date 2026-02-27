@@ -1,13 +1,13 @@
-import { Alert, Pressable, StyleSheet, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ContentContainer } from '@/components/content-container';
 import { ScreenHeader } from '@/components/screen-header';
 import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { useAuth } from '@/contexts/auth-context';
 import { Radius, Spacing } from '@/constants/theme';
-import { ContentContainer } from '@/components/content-container';
+import { useAuth } from '@/contexts/auth-context';
+import { useThemeColor } from '@/hooks/use-theme-color';
+import { useRouter } from 'expo-router';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function SettingsModal() {
   const router = useRouter();
@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
   },
   spacer: {
     flex: 1,
+    marginVertical: Spacing.xs,
   },
   signOutBtn: {
     flexDirection: 'row',
