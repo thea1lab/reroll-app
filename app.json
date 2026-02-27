@@ -3,7 +3,7 @@
     "name": "Reroll",
     "slug": "reroll.a1lab.com.br",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "rerolla1labcombr",
     "userInterfaceStyle": "automatic",

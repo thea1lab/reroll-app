@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScreenHeader } from '@/components/screen-header';
 import { FormField } from '@/components/form-field';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useData } from '@/storage/data-context';
-import { Radius, Spacing } from '@/constants/theme';
-
-const NUM_COLUMNS = 6;
+import { Layout, Radius, Spacing } from '@/constants/theme';
+import { ContentContainer } from '@/components/content-container';
+import { useResponsive } from '@/hooks/use-responsive';
 const GRID_GAP = Spacing.sm;
 
 const FOOD_EMOJIS = [
@@ -25,9 +25,10 @@ export default function GroupFormModal() {
   const tintLight = useThemeColor({}, 'tintLight');
   const border = useThemeColor({}, 'border');
 
-  const { width: screenWidth } = useWindowDimensions();
+  const { width: screenWidth, emojiColumns } = useResponsive();
+  const effectiveWidth = Math.min(screenWidth, Layout.modalMaxWidth);
   const cellSize = Math.floor(
-    (screenWidth - Spacing.md * 2 - GRID_GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
+    (effectiveWidth - Spacing.md * 2 - GRID_GAP * (emojiColumns - 1)) / emojiColumns
   );
 
   const existing = groupId ? groups.find((g) => g.id === groupId) : null;
@@ -68,34 +69,36 @@ export default function GroupFormModal() {
         onRightPress={handleSave}
       />
       <ScrollView contentContainerStyle={styles.content}>
-        <FormField
-          label="Group Name"
-          placeholder="e.g. Breakfast, Dinner..."
-          value={name}
-          onChangeText={setName}
-          autoFocus
-        />
-        <ThemedText style={styles.label}>Emoji</ThemedText>
-        <View style={styles.emojiGrid}>
-          {FOOD_EMOJIS.map((e) => (
-            <Pressable
-              key={e}
-              style={[
-                styles.emojiBtn,
-                {
-                  width: cellSize,
-                  height: cellSize,
-                  backgroundColor: emoji === e ? tintLight : 'transparent',
-                  borderColor: emoji === e ? tint : border,
-                },
-              ]}
-              onPress={() => setEmoji(e)}>
-              <ThemedText style={[styles.emojiText, { fontSize: cellSize * 0.45 }]}>
-                {e}
-              </ThemedText>
-            </Pressable>
-          ))}
-        </View>
+        <ContentContainer maxWidth={Layout.modalMaxWidth}>
+          <FormField
+            label="Group Name"
+            placeholder="e.g. Breakfast, Dinner..."
+            value={name}
+            onChangeText={setName}
+            autoFocus
+          />
+          <ThemedText style={styles.label}>Emoji</ThemedText>
+          <View style={styles.emojiGrid}>
+            {FOOD_EMOJIS.map((e) => (
+              <Pressable
+                key={e}
+                style={[
+                  styles.emojiBtn,
+                  {
+                    width: cellSize,
+                    height: cellSize,
+                    backgroundColor: emoji === e ? tintLight : 'transparent',
+                    borderColor: emoji === e ? tint : border,
+                  },
+                ]}
+                onPress={() => setEmoji(e)}>
+                <ThemedText style={[styles.emojiText, { fontSize: cellSize * 0.45 }]}>
+                  {e}
+                </ThemedText>
+              </Pressable>
+            ))}
+          </View>
+        </ContentContainer>
       </ScrollView>
     </View>
   );

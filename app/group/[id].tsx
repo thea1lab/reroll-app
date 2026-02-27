@@ -11,7 +11,8 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useData } from '@/storage/data-context';
-import { Radius, Spacing } from '@/constants/theme';
+import { Layout, Radius, Spacing } from '@/constants/theme';
+import { useResponsive } from '@/hooks/use-responsive';
 import type { Difficulty, Recipe } from '@/constants/types';
 
 export default function GroupDetailScreen() {
@@ -20,6 +21,7 @@ export default function GroupDetailScreen() {
   const insets = useSafeAreaInsets();
   const { groups, getRecipesForGroup } = useData();
   const [filter, setFilter] = useState<Difficulty | null>(null);
+  const { recipeColumns, isTablet } = useResponsive();
   const tint = useThemeColor({}, 'tint');
   const surface = useThemeColor({}, 'surface');
   const border = useThemeColor({}, 'border');
@@ -31,12 +33,18 @@ export default function GroupDetailScreen() {
 
   if (!group) return null;
 
-  const renderItem = ({ item }: { item: Recipe }) => (
-    <RecipeCard
-      recipe={item}
-      onPress={() => router.push({ pathname: '/recipe/[id]', params: { id: item.id } })}
-    />
-  );
+  const renderItem = ({ item }: { item: Recipe }) => {
+    const card = (
+      <RecipeCard
+        recipe={item}
+        onPress={() => router.push({ pathname: '/recipe/[id]', params: { id: item.id } })}
+      />
+    );
+    if (recipeColumns > 1) {
+      return <View style={{ flex: 1 }}>{card}</View>;
+    }
+    return card;
+  };
 
   return (
     <View style={styles.container}>
@@ -66,29 +74,33 @@ export default function GroupDetailScreen() {
         />
       ) : (
         <FlatList
+          key={recipeColumns}
           data={filteredRecipes}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
+          numColumns={recipeColumns}
           contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
         />
       )}
       <View style={[styles.bottomBar, { paddingBottom: insets.bottom + Spacing.sm, backgroundColor: surface, borderTopColor: border }]}>
-        <Pressable
-          style={[styles.addBtn, { borderColor: tint }]}
-          onPress={() => router.push({ pathname: '/modals/recipe-form', params: { groupId: group.id } })}>
-          <ThemedText style={styles.addBtnText} lightColor={tint} darkColor={tint}>
-            Add Recipe
-          </ThemedText>
-        </Pressable>
-        <RerollButton
-          onPress={() =>
-            router.push({
-              pathname: '/modals/reroll',
-              params: { groupId: group.id, difficulty: filter ?? '' },
-            })
-          }
-          disabled={filteredRecipes.length === 0}
-        />
+        <View style={[styles.bottomBarInner, isTablet && { maxWidth: Layout.contentMaxWidth, alignSelf: 'center' as const, width: '100%' as const }]}>
+          <Pressable
+            style={[styles.addBtn, { borderColor: tint }]}
+            onPress={() => router.push({ pathname: '/modals/recipe-form', params: { groupId: group.id } })}>
+            <ThemedText style={styles.addBtnText} lightColor={tint} darkColor={tint}>
+              Add Recipe
+            </ThemedText>
+          </Pressable>
+          <RerollButton
+            onPress={() =>
+              router.push({
+                pathname: '/modals/reroll',
+                params: { groupId: group.id, difficulty: filter ?? '' },
+              })
+            }
+            disabled={filteredRecipes.length === 0}
+          />
+        </View>
       </View>
     </View>
   );
@@ -103,11 +115,13 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    flexDirection: 'row',
-    gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.sm,
     borderTopWidth: 1,
+  },
+  bottomBarInner: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
   },
   addBtn: {
     flex: 1,

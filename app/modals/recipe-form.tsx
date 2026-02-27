@@ -6,7 +6,8 @@ import { FormField } from '@/components/form-field';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useData } from '@/storage/data-context';
-import { Radius, Spacing } from '@/constants/theme';
+import { Layout, Radius, Spacing } from '@/constants/theme';
+import { ContentContainer } from '@/components/content-container';
 import type { Difficulty } from '@/constants/types';
 
 const DIFFICULTIES: Difficulty[] = ['Easy', 'Medium', 'Hard'];
@@ -78,59 +79,61 @@ export default function RecipeFormModal() {
         onRightPress={handleSave}
       />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <FormField
-          label="Recipe Name"
-          placeholder="e.g. Chicken Stir-Fry"
-          value={name}
-          onChangeText={setName}
-          autoFocus
-        />
-        <FormField
-          label="Estimated Time (minutes)"
-          placeholder="e.g. 30"
-          value={time}
-          onChangeText={setTime}
-          keyboardType="numeric"
-        />
-        <ThemedText style={styles.label}>Difficulty</ThemedText>
-        <View style={styles.difficultyRow}>
-          {DIFFICULTIES.map((d) => {
-            const active = difficulty === d;
-            const color = difficultyColor(d);
-            return (
-              <Pressable
-                key={d}
-                style={[
-                  styles.diffPill,
-                  {
-                    backgroundColor: active ? color + '20' : 'transparent',
-                    borderColor: active ? color : border,
-                  },
-                ]}
-                onPress={() => setDifficulty(d)}>
-                <ThemedText style={[styles.diffText, { color }]} lightColor={color} darkColor={color}>
-                  {d}
-                </ThemedText>
-              </Pressable>
-            );
-          })}
-        </View>
-        <FormField
-          label="Ingredients"
-          placeholder="One ingredient per line"
-          value={ingredients}
-          onChangeText={setIngredients}
-          multiline
-          numberOfLines={5}
-        />
-        <FormField
-          label="Steps"
-          placeholder="One step per line"
-          value={steps}
-          onChangeText={setSteps}
-          multiline
-          numberOfLines={5}
-        />
+        <ContentContainer maxWidth={Layout.modalMaxWidth}>
+          <FormField
+            label="Recipe Name"
+            placeholder="e.g. Chicken Stir-Fry"
+            value={name}
+            onChangeText={setName}
+            autoFocus
+          />
+          <FormField
+            label="Estimated Time (minutes)"
+            placeholder="e.g. 30"
+            value={time}
+            onChangeText={setTime}
+            keyboardType="numeric"
+          />
+          <ThemedText style={styles.label}>Difficulty</ThemedText>
+          <View style={styles.difficultyRow}>
+            {DIFFICULTIES.map((d) => {
+              const active = difficulty === d;
+              const color = difficultyColor(d);
+              return (
+                <Pressable
+                  key={d}
+                  style={[
+                    styles.diffPill,
+                    {
+                      backgroundColor: active ? color + '20' : 'transparent',
+                      borderColor: active ? color : border,
+                    },
+                  ]}
+                  onPress={() => setDifficulty(d)}>
+                  <ThemedText style={[styles.diffText, { color }]} lightColor={color} darkColor={color}>
+                    {d}
+                  </ThemedText>
+                </Pressable>
+              );
+            })}
+          </View>
+          <FormField
+            label="Ingredients"
+            placeholder="One ingredient per line"
+            value={ingredients}
+            onChangeText={setIngredients}
+            multiline
+            numberOfLines={5}
+          />
+          <FormField
+            label="Steps"
+            placeholder="One step per line"
+            value={steps}
+            onChangeText={setSteps}
+            multiline
+            numberOfLines={5}
+          />
+        </ContentContainer>
       </ScrollView>
     </View>
   );

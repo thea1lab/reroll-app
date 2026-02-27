@@ -8,6 +8,7 @@ import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useData } from '@/storage/data-context';
 import { Radius, Spacing } from '@/constants/theme';
+import { ContentContainer } from '@/components/content-container';
 
 export default function RecipeDetailScreen() {
   const router = useRouter();
@@ -55,48 +56,50 @@ export default function RecipeDetailScreen() {
         }
       />
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + Spacing.xl }]}>
-        <View style={styles.metaRow}>
-          <DifficultyBadge difficulty={recipe.difficulty} />
-          <View style={styles.time}>
-            <IconSymbol name="clock" size={18} color={iconColor} />
-            <ThemedText style={styles.timeText}>{recipe.estimatedTime} min</ThemedText>
+        <ContentContainer>
+          <View style={styles.metaRow}>
+            <DifficultyBadge difficulty={recipe.difficulty} />
+            <View style={styles.time}>
+              <IconSymbol name="clock" size={18} color={iconColor} />
+              <ThemedText style={styles.timeText}>{recipe.estimatedTime} min</ThemedText>
+            </View>
           </View>
-        </View>
 
-        {ingredientsList.length > 0 && (
-          <View style={[styles.section, { backgroundColor: surface, borderColor: border }]}>
-            <ThemedText type="subtitle" style={styles.sectionTitle}>
-              Ingredients
+          {ingredientsList.length > 0 && (
+            <View style={[styles.section, { backgroundColor: surface, borderColor: border }]}>
+              <ThemedText type="subtitle" style={styles.sectionTitle}>
+                Ingredients
+              </ThemedText>
+              {ingredientsList.map((item, i) => (
+                <View key={i} style={styles.bulletRow}>
+                  <ThemedText style={styles.bullet}>•</ThemedText>
+                  <ThemedText style={styles.bulletText}>{item.trim()}</ThemedText>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {stepsList.length > 0 && (
+            <View style={[styles.section, { backgroundColor: surface, borderColor: border }]}>
+              <ThemedText type="subtitle" style={styles.sectionTitle}>
+                Steps
+              </ThemedText>
+              {stepsList.map((step, i) => (
+                <View key={i} style={styles.stepRow}>
+                  <ThemedText style={[styles.stepNum, { color: tint }]}>{i + 1}.</ThemedText>
+                  <ThemedText style={styles.stepText}>{step.trim()}</ThemedText>
+                </View>
+              ))}
+            </View>
+          )}
+
+          <Pressable style={[styles.deleteBtn, { borderColor: danger }]} onPress={handleDelete}>
+            <IconSymbol name="trash" size={18} color={danger} />
+            <ThemedText style={styles.deleteText} lightColor={danger} darkColor={danger}>
+              Delete Recipe
             </ThemedText>
-            {ingredientsList.map((item, i) => (
-              <View key={i} style={styles.bulletRow}>
-                <ThemedText style={styles.bullet}>•</ThemedText>
-                <ThemedText style={styles.bulletText}>{item.trim()}</ThemedText>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {stepsList.length > 0 && (
-          <View style={[styles.section, { backgroundColor: surface, borderColor: border }]}>
-            <ThemedText type="subtitle" style={styles.sectionTitle}>
-              Steps
-            </ThemedText>
-            {stepsList.map((step, i) => (
-              <View key={i} style={styles.stepRow}>
-                <ThemedText style={[styles.stepNum, { color: tint }]}>{i + 1}.</ThemedText>
-                <ThemedText style={styles.stepText}>{step.trim()}</ThemedText>
-              </View>
-            ))}
-          </View>
-        )}
-
-        <Pressable style={[styles.deleteBtn, { borderColor: danger }]} onPress={handleDelete}>
-          <IconSymbol name="trash" size={18} color={danger} />
-          <ThemedText style={styles.deleteText} lightColor={danger} darkColor={danger}>
-            Delete Recipe
-          </ThemedText>
-        </Pressable>
+          </Pressable>
+        </ContentContainer>
       </ScrollView>
     </View>
   );

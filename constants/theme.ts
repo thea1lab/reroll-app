@@ -44,6 +44,9 @@ export const Radius = {
   xl: 24,
 } as const;
 
+export const Breakpoints = { tablet: 768, largeTablet: 1024 } as const;
+export const Layout = { contentMaxWidth: 600, modalMaxWidth: 540 } as const;
+
 export const Fonts = Platform.select({
   ios: {
     sans: 'system-ui',

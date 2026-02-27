@@ -8,6 +8,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useData } from '@/storage/data-context';
 import { Radius, Spacing } from '@/constants/theme';
+import { useResponsive } from '@/hooks/use-responsive';
 import type { Group } from '@/constants/types';
 
 export default function HomeScreen() {
@@ -15,6 +16,7 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { groups, recipes, deleteGroup } = useData();
   const tint = useThemeColor({}, 'tint');
+  const { groupColumns } = useResponsive();
 
   const handleLongPress = (group: Group) => {
     Alert.alert(group.name, undefined, [
@@ -61,10 +63,11 @@ export default function HomeScreen() {
         />
       ) : (
         <FlatList
+          key={groupColumns}
           data={groups}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
-          numColumns={2}
+          numColumns={groupColumns}
           contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 80 }]}
         />
       )}

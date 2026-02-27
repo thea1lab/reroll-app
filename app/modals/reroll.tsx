@@ -19,7 +19,8 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useData } from '@/storage/data-context';
-import { Radius, Spacing } from '@/constants/theme';
+import { Layout, Radius, Spacing } from '@/constants/theme';
+import { useResponsive } from '@/hooks/use-responsive';
 import type { Difficulty, Recipe } from '@/constants/types';
 
 type Phase = 'shuffle' | 'reveal';
@@ -34,6 +35,7 @@ export default function RerollModal() {
   const border = useThemeColor({}, 'border');
   const bg = useThemeColor({}, 'background');
 
+  const { isTablet } = useResponsive();
   const diffFilter = (difficulty as Difficulty) || null;
   const eligible = getRecipesForGroup(groupId!, diffFilter);
 
@@ -183,7 +185,7 @@ export default function RerollModal() {
       {phase === 'reveal' && finalRecipe && (
         <Animated.View
           entering={SlideInDown.delay(300).springify()}
-          style={[styles.actions, { paddingBottom: insets.bottom + Spacing.md }]}>
+          style={[styles.actions, { paddingBottom: insets.bottom + Spacing.md }, isTablet && { maxWidth: Layout.modalMaxWidth, alignSelf: 'center' as const, width: '100%' as const }]}>
           <Pressable
             style={[styles.cookBtn, { backgroundColor: tint }]}
             onPress={() => {
@@ -263,7 +265,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '100%',
-    maxWidth: 320,
+    maxWidth: 380,
     borderRadius: Radius.xl,
     borderWidth: 1,
     padding: Spacing.xl,
