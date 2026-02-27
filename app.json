@@ -8,9 +8,6 @@
     "scheme": "rerolla1labcombr",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
       "package": "br.com.a1lab.reroll",
       "googleServicesFile": "./google-services.json",
