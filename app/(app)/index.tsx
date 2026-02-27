@@ -1,4 +1,4 @@
-import { Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/screen-header';
@@ -7,7 +7,7 @@ import { EmptyState } from '@/components/empty-state';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useData } from '@/storage/data-context';
-import { Radius, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 import { useResponsive } from '@/hooks/use-responsive';
 import { useLanguage } from '@/contexts/language-context';
 import type { Group } from '@/constants/types';
@@ -15,7 +15,7 @@ import type { Group } from '@/constants/types';
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { groups, recipes, deleteGroup } = useData();
+  const { groups, recipes, deleteGroup, isLoading } = useData();
   const tint = useThemeColor({}, 'tint');
   const iconColor = useThemeColor({}, 'icon');
   const { groupColumns } = useResponsive();
@@ -61,7 +61,11 @@ export default function HomeScreen() {
         rightIcon={<IconSymbol name="gearshape" size={22} color={iconColor} />}
         onRightPress={() => router.push('/modals/settings')}
       />
-      {groups.length === 0 ? (
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={tint} />
+        </View>
+      ) : groups.length === 0 ? (
         <EmptyState
           icon="🍽️"
           title={t('home.emptyTitle')}
@@ -79,11 +83,13 @@ export default function HomeScreen() {
           contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 80 }]}
         />
       )}
-      <Pressable
-        style={[styles.fab, { backgroundColor: tint, bottom: insets.bottom + Spacing.lg }]}
-        onPress={() => router.push('/modals/group-form')}>
-        <IconSymbol name="plus" size={28} color="#fff" />
-      </Pressable>
+      {!isLoading && (
+        <Pressable
+          style={[styles.fab, { backgroundColor: tint, bottom: insets.bottom + Spacing.lg }]}
+          onPress={() => router.push('/modals/group-form')}>
+          <IconSymbol name="plus" size={28} color="#fff" />
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -94,6 +100,11 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingHorizontal: Spacing.sm,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   fab: {
     position: 'absolute',

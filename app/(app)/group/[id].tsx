@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/screen-header';
@@ -20,7 +20,7 @@ export default function GroupDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
-  const { groups, getRecipesForGroup } = useData();
+  const { groups, getRecipesForGroup, isLoading } = useData();
   const [filter, setFilter] = useState<Difficulty | null>(null);
   const { recipeColumns, isTablet } = useResponsive();
   const tint = useThemeColor({}, 'tint');
@@ -28,6 +28,14 @@ export default function GroupDetailScreen() {
   const border = useThemeColor({}, 'border');
   const iconColor = useThemeColor({}, 'icon');
   const { t } = useLanguage();
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={tint} />
+      </View>
+    );
+  }
 
   const group = groups.find((g) => g.id === id);
   const filteredRecipes = getRecipesForGroup(id!, filter);
@@ -111,6 +119,11 @@ export default function GroupDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   bottomBar: {
     position: 'absolute',
