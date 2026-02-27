@@ -5,7 +5,7 @@ import 'react-native-reanimated';
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { DataProvider } from '@/storage/data-context';
+import { AuthProvider } from '@/contexts/auth-context';
 
 const LightTheme = {
   ...DefaultTheme,
@@ -36,17 +36,14 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkAppTheme : LightTheme}>
-      <DataProvider>
+      <AuthProvider>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
-          <Stack.Screen name="group/[id]" />
-          <Stack.Screen name="recipe/[id]" />
-          <Stack.Screen name="modals/group-form" options={{ presentation: 'modal' }} />
-          <Stack.Screen name="modals/recipe-form" options={{ presentation: 'modal' }} />
-          <Stack.Screen name="modals/reroll" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(app)" />
         </Stack>
         <StatusBar style="auto" />
-      </DataProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

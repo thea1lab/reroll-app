@@ -1,104 +1,21 @@
-import { Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
-import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ScreenHeader } from '@/components/screen-header';
-import { GroupCard } from '@/components/group-card';
-import { EmptyState } from '@/components/empty-state';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { useData } from '@/storage/data-context';
-import { Radius, Spacing } from '@/constants/theme';
-import { useResponsive } from '@/hooks/use-responsive';
-import type { Group } from '@/constants/types';
+import { Redirect } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
+import { useAuth } from '@/contexts/auth-context';
 
-export default function HomeScreen() {
-  const router = useRouter();
-  const insets = useSafeAreaInsets();
-  const { groups, recipes, deleteGroup } = useData();
-  const tint = useThemeColor({}, 'tint');
-  const { groupColumns } = useResponsive();
+export default function Index() {
+  const { user, isLoading } = useAuth();
 
-  const handleLongPress = (group: Group) => {
-    Alert.alert(group.name, undefined, [
-      {
-        text: 'Edit',
-        onPress: () => router.push({ pathname: '/modals/group-form', params: { groupId: group.id } }),
-      },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () =>
-          Alert.alert('Delete Group', `Delete "${group.name}" and all its recipes?`, [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => deleteGroup(group.id) },
-          ]),
-      },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
-  };
-
-  const renderItem = ({ item }: { item: Group }) => {
-    const count = recipes.filter((r) => r.groupId === item.id).length;
+  if (isLoading) {
     return (
-      <GroupCard
-        emoji={item.emoji}
-        name={item.name}
-        recipeCount={count}
-        onPress={() => router.push({ pathname: '/group/[id]', params: { id: item.id } })}
-        onLongPress={() => handleLongPress(item)}
-      />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
     );
-  };
+  }
 
-  return (
-    <View style={styles.container}>
-      <ScreenHeader title="Reroll" subtitle="What are we cooking today?" />
-      {groups.length === 0 ? (
-        <EmptyState
-          icon="🍽️"
-          title="No groups yet"
-          subtitle="Create your first recipe group to get started!"
-          actionLabel="Create Group"
-          onAction={() => router.push('/modals/group-form')}
-        />
-      ) : (
-        <FlatList
-          key={groupColumns}
-          data={groups}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          numColumns={groupColumns}
-          contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + 80 }]}
-        />
-      )}
-      <Pressable
-        style={[styles.fab, { backgroundColor: tint, bottom: insets.bottom + Spacing.lg }]}
-        onPress={() => router.push('/modals/group-form')}>
-        <IconSymbol name="plus" size={28} color="#fff" />
-      </Pressable>
-    </View>
-  );
+  if (user) {
+    return <Redirect href="/(app)" />;
+  }
+
+  return <Redirect href="/(auth)/landing" />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  list: {
-    paddingHorizontal: Spacing.sm,
-  },
-  fab: {
-    position: 'absolute',
-    right: Spacing.lg,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 5,
-  },
-});

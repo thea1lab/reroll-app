@@ -13,6 +13,7 @@
     },
     "android": {
       "package": "br.com.a1lab.reroll",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#FFF8F0",
         "foregroundImage": "./assets/images/android-icon-foreground.png"
@@ -37,7 +38,10 @@
             "backgroundColor": "#1A1412"
           }
         }
-      ]
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true,

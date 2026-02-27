@@ -1,6 +1,18 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import type { Difficulty, Group, Recipe } from '@/constants/types';
-import { loadGroups, loadRecipes, saveGroups, saveRecipes } from '@/storage';
+import { useAuth } from '@/contexts/auth-context';
+import {
+  addGroupDoc,
+  addRecipeDoc,
+  deleteGroupDoc,
+  deleteRecipeDoc,
+  generateFirestoreId,
+  seedInitialData,
+  subscribeGroups,
+  subscribeRecipes,
+  updateGroupDoc,
+  updateRecipeDoc,
+} from '@/storage/firestore';
 
 interface DataContextValue {
   groups: Group[];
@@ -17,20 +29,14 @@ interface DataContextValue {
 
 const DataContext = createContext<DataContextValue | null>(null);
 
-function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
-}
-
-const SEED_GROUPS: Group[] = [
-  { id: 'seed-breakfast', name: 'Breakfast', emoji: '🍳', createdAt: Date.now(), updatedAt: Date.now() },
-  { id: 'seed-dinner', name: 'Dinner', emoji: '🥘', createdAt: Date.now(), updatedAt: Date.now() },
-  { id: 'seed-desserts', name: 'Desserts', emoji: '🍰', createdAt: Date.now(), updatedAt: Date.now() },
+const SEED_GROUPS: Omit<Group, 'id'>[] = [
+  { name: 'Breakfast', emoji: '🍳', createdAt: Date.now(), updatedAt: Date.now() },
+  { name: 'Dinner', emoji: '🥘', createdAt: Date.now(), updatedAt: Date.now() },
+  { name: 'Desserts', emoji: '🍰', createdAt: Date.now(), updatedAt: Date.now() },
 ];
 
-const SEED_RECIPES: Recipe[] = [
+const SEED_RECIPES_TEMPLATE: Omit<Recipe, 'id' | 'groupId'>[] = [
   {
-    id: 'seed-r1',
-    groupId: 'seed-breakfast',
     name: 'Fluffy Pancakes',
     ingredients: '2 cups flour\n2 eggs\n1 cup milk\n2 tbsp sugar\n1 tsp baking powder\nButter for cooking',
     steps: 'Mix dry ingredients together\nWhisk eggs and milk, combine with dry mix\nHeat a buttered pan over medium heat\nPour batter and cook until bubbles form\nFlip and cook until golden',
@@ -40,8 +46,6 @@ const SEED_RECIPES: Recipe[] = [
     updatedAt: Date.now(),
   },
   {
-    id: 'seed-r2',
-    groupId: 'seed-breakfast',
     name: 'Avocado Toast',
     ingredients: '2 slices sourdough bread\n1 ripe avocado\nSalt and pepper\nRed pepper flakes\nLemon juice',
     steps: 'Toast the bread until golden\nMash the avocado with lemon juice, salt, and pepper\nSpread on toast\nSprinkle red pepper flakes on top',
@@ -51,8 +55,6 @@ const SEED_RECIPES: Recipe[] = [
     updatedAt: Date.now(),
   },
   {
-    id: 'seed-r3',
-    groupId: 'seed-dinner',
     name: 'Chicken Stir-Fry',
     ingredients: '500g chicken breast\n2 cups mixed vegetables\n3 tbsp soy sauce\n1 tbsp sesame oil\n2 cloves garlic\nRice for serving',
     steps: 'Slice chicken into strips\nHeat sesame oil in a wok\nCook chicken until golden\nAdd garlic and vegetables\nPour soy sauce and toss\nServe over rice',
@@ -62,8 +64,6 @@ const SEED_RECIPES: Recipe[] = [
     updatedAt: Date.now(),
   },
   {
-    id: 'seed-r4',
-    groupId: 'seed-dinner',
     name: 'Spaghetti Bolognese',
     ingredients: '400g spaghetti\n500g ground beef\n1 can crushed tomatoes\n1 onion\n2 cloves garlic\nOlive oil\nBasil\nParmesan',
     steps: 'Cook spaghetti according to package\nSauté onion and garlic in olive oil\nBrown the ground beef\nAdd crushed tomatoes and simmer 20 min\nSeason with basil, salt, pepper\nServe sauce over pasta with parmesan',
@@ -73,8 +73,6 @@ const SEED_RECIPES: Recipe[] = [
     updatedAt: Date.now(),
   },
   {
-    id: 'seed-r5',
-    groupId: 'seed-desserts',
     name: 'Chocolate Mug Cake',
     ingredients: '4 tbsp flour\n4 tbsp sugar\n2 tbsp cocoa powder\n1 egg\n3 tbsp milk\n3 tbsp oil\nChocolate chips',
     steps: 'Mix all dry ingredients in a mug\nAdd egg, milk, and oil\nStir until smooth\nDrop in chocolate chips\nMicrowave 90 seconds\nLet cool 1 minute',
@@ -85,86 +83,126 @@ const SEED_RECIPES: Recipe[] = [
   },
 ];
 
+// Map recipe index -> seed group index (Breakfast: 0,1; Dinner: 2,3; Desserts: 4)
+const RECIPE_GROUP_MAP = [0, 0, 1, 1, 2];
+
 export function DataProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
   const [groups, setGroups] = useState<Group[]>([]);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const seededRef = useRef(false);
 
   useEffect(() => {
-    (async () => {
-      const [storedGroups, storedRecipes] = await Promise.all([loadGroups(), loadRecipes()]);
-      if (storedGroups.length === 0 && storedRecipes.length === 0) {
-        setGroups(SEED_GROUPS);
-        setRecipes(SEED_RECIPES);
-        await Promise.all([saveGroups(SEED_GROUPS), saveRecipes(SEED_RECIPES)]);
-      } else {
-        setGroups(storedGroups);
-        setRecipes(storedRecipes);
+    if (!user) return;
+
+    const userId = user.uid;
+    let groupsLoaded = false;
+    let recipesLoaded = false;
+    let loadedGroups: Group[] = [];
+    let loadedRecipes: Recipe[] = [];
+
+    const checkSeed = async () => {
+      if (!groupsLoaded || !recipesLoaded) return;
+      if (loadedGroups.length === 0 && loadedRecipes.length === 0 && !seededRef.current) {
+        seededRef.current = true;
+        const seedGroups: Group[] = SEED_GROUPS.map((g) => ({
+          ...g,
+          id: generateFirestoreId(userId, 'groups'),
+        }));
+        const seedRecipes: Recipe[] = SEED_RECIPES_TEMPLATE.map((r, i) => ({
+          ...r,
+          id: generateFirestoreId(userId, 'recipes'),
+          groupId: seedGroups[RECIPE_GROUP_MAP[i]].id,
+        }));
+        await seedInitialData(userId, seedGroups, seedRecipes);
+        // Firestore subscription will update state automatically
       }
       setIsLoading(false);
-    })();
-  }, []);
+    };
 
-  const persistGroups = useCallback(async (next: Group[]) => {
-    setGroups(next);
-    await saveGroups(next);
-  }, []);
+    const unsubGroups = subscribeGroups(
+      userId,
+      (g) => {
+        loadedGroups = g;
+        groupsLoaded = true;
+        setGroups(g);
+        checkSeed();
+      },
+      (err) => console.error('Groups subscription error:', err)
+    );
 
-  const persistRecipes = useCallback(async (next: Recipe[]) => {
-    setRecipes(next);
-    await saveRecipes(next);
-  }, []);
+    const unsubRecipes = subscribeRecipes(
+      userId,
+      (r) => {
+        loadedRecipes = r;
+        recipesLoaded = true;
+        setRecipes(r);
+        checkSeed();
+      },
+      (err) => console.error('Recipes subscription error:', err)
+    );
+
+    return () => {
+      unsubGroups();
+      unsubRecipes();
+    };
+  }, [user]);
 
   const addGroup = useCallback(
     (name: string, emoji: string): Group => {
+      if (!user) throw new Error('Not authenticated');
       const now = Date.now();
-      const group: Group = { id: generateId(), name, emoji, createdAt: now, updatedAt: now };
-      const next = [...groups, group];
-      persistGroups(next);
+      const id = generateFirestoreId(user.uid, 'groups');
+      const group: Group = { id, name, emoji, createdAt: now, updatedAt: now };
+      addGroupDoc(user.uid, group);
       return group;
     },
-    [groups, persistGroups]
+    [user]
   );
 
   const updateGroup = useCallback(
     (id: string, updates: Partial<Pick<Group, 'name' | 'emoji'>>) => {
-      const next = groups.map((g) => (g.id === id ? { ...g, ...updates, updatedAt: Date.now() } : g));
-      persistGroups(next);
+      if (!user) return;
+      updateGroupDoc(user.uid, id, { ...updates, updatedAt: Date.now() });
     },
-    [groups, persistGroups]
+    [user]
   );
 
   const deleteGroup = useCallback(
     (id: string) => {
-      persistGroups(groups.filter((g) => g.id !== id));
-      persistRecipes(recipes.filter((r) => r.groupId !== id));
+      if (!user) return;
+      deleteGroupDoc(user.uid, id);
     },
-    [groups, recipes, persistGroups, persistRecipes]
+    [user]
   );
 
   const addRecipe = useCallback(
     (data: Omit<Recipe, 'id' | 'createdAt' | 'updatedAt'>): Recipe => {
+      if (!user) throw new Error('Not authenticated');
       const now = Date.now();
-      const recipe: Recipe = { ...data, id: generateId(), createdAt: now, updatedAt: now };
-      persistRecipes([...recipes, recipe]);
+      const id = generateFirestoreId(user.uid, 'recipes');
+      const recipe: Recipe = { ...data, id, createdAt: now, updatedAt: now };
+      addRecipeDoc(user.uid, recipe);
       return recipe;
     },
-    [recipes, persistRecipes]
+    [user]
   );
 
   const updateRecipe = useCallback(
     (id: string, updates: Partial<Omit<Recipe, 'id' | 'createdAt' | 'updatedAt'>>) => {
-      const next = recipes.map((r) => (r.id === id ? { ...r, ...updates, updatedAt: Date.now() } : r));
-      persistRecipes(next);
+      if (!user) return;
+      updateRecipeDoc(user.uid, id, { ...updates, updatedAt: Date.now() });
     },
-    [recipes, persistRecipes]
+    [user]
   );
 
   const deleteRecipe = useCallback(
     (id: string) => {
-      persistRecipes(recipes.filter((r) => r.id !== id));
+      if (!user) return;
+      deleteRecipeDoc(user.uid, id);
     },
-    [recipes, persistRecipes]
+    [user]
   );
 
   const getRecipesForGroup = useCallback(

@@ -20,6 +20,8 @@ const MAPPING = {
   'dice': 'casino',
   'checkmark': 'check',
   'line.3.horizontal.decrease': 'filter-list',
+  'gearshape': 'settings',
+  'rectangle.portrait.and.arrow.right': 'logout',
 } as IconMapping;
 
 export function IconSymbol({
