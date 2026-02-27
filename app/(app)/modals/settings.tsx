@@ -4,25 +4,34 @@ import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Radius, Spacing } from '@/constants/theme';
 import { useAuth } from '@/contexts/auth-context';
+import { useLanguage } from '@/contexts/language-context';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useRouter } from 'expo-router';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+const LANGUAGES = [
+  { code: 'en', label: 'English' },
+  { code: 'pt', label: 'Português' },
+];
+
 export default function SettingsModal() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user, signOut } = useAuth();
+  const { locale, setLocale, t } = useLanguage();
   const tint = useThemeColor({}, 'tint');
+  const tintLight = useThemeColor({}, 'tintLight');
   const surface = useThemeColor({}, 'surface');
   const border = useThemeColor({}, 'border');
   const danger = useThemeColor({}, 'danger');
+  const text = useThemeColor({}, 'text');
 
   const handleSignOut = () => {
-    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('settings.signOut'), t('settings.signOutMessage'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Sign Out',
+        text: t('settings.signOut'),
         style: 'destructive',
         onPress: async () => {
           await signOut();
@@ -35,10 +44,10 @@ export default function SettingsModal() {
   return (
     <View style={styles.container}>
       <ScreenHeader
-        title="Settings"
+        title={t('settings.title')}
         leftIcon={
           <ThemedText style={styles.headerBtn} lightColor={tint} darkColor={tint}>
-            Done
+            {t('common.done')}
           </ThemedText>
         }
         onLeftPress={() => router.back()}
@@ -50,7 +59,7 @@ export default function SettingsModal() {
               <ThemedText style={styles.profileEmoji}>👤</ThemedText>
               <View style={styles.profileInfo}>
                 <ThemedText type="defaultSemiBold" numberOfLines={1}>
-                  {user.displayName || 'User'}
+                  {user.displayName || t('common.user')}
                 </ThemedText>
                 <ThemedText style={styles.email} lightColor="#8B7355" darkColor="#A89585" numberOfLines={1}>
                   {user.email}
@@ -59,12 +68,40 @@ export default function SettingsModal() {
             </View>
           )}
 
+          <View style={styles.languageSection}>
+            <ThemedText style={styles.languageLabel}>{t('settings.language')}</ThemedText>
+            <View style={styles.languageRow}>
+              {LANGUAGES.map((lang) => {
+                const active = locale === lang.code;
+                return (
+                  <Pressable
+                    key={lang.code}
+                    style={[
+                      styles.langPill,
+                      {
+                        backgroundColor: active ? tintLight : 'transparent',
+                        borderColor: active ? tint : border,
+                      },
+                    ]}
+                    onPress={() => setLocale(lang.code)}>
+                    <ThemedText
+                      style={[styles.langText, { color: active ? tint : text }]}
+                      lightColor={active ? tint : text}
+                      darkColor={active ? tint : text}>
+                      {lang.label}
+                    </ThemedText>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+
           <View style={styles.spacer} />
 
           <Pressable style={[styles.signOutBtn, { borderColor: danger }]} onPress={handleSignOut}>
             <IconSymbol name="rectangle.portrait.and.arrow.right" size={18} color={danger} />
             <ThemedText style={styles.signOutText} lightColor={danger} darkColor={danger}>
-              Sign Out
+              {t('settings.signOut')}
             </ThemedText>
           </Pressable>
         </ContentContainer>
@@ -99,6 +136,29 @@ const styles = StyleSheet.create({
   },
   email: {
     fontSize: 14,
+  },
+  languageSection: {
+    marginTop: Spacing.lg,
+  },
+  languageLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: Spacing.sm,
+  },
+  languageRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  langPill: {
+    flex: 1,
+    paddingVertical: Spacing.sm,
+    borderRadius: Radius.xl,
+    borderWidth: 1.5,
+    alignItems: 'center',
+  },
+  langText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   spacer: {
     flex: 1,

@@ -6,6 +6,7 @@ import 'react-native-reanimated';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider } from '@/contexts/auth-context';
+import { LanguageProvider } from '@/contexts/language-context';
 
 const LightTheme = {
   ...DefaultTheme,
@@ -36,14 +37,16 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkAppTheme : LightTheme}>
-      <AuthProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" />
-          <Stack.Screen name="(auth)" />
-          <Stack.Screen name="(app)" />
-        </Stack>
-        <StatusBar style="auto" />
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(app)" />
+          </Stack>
+          <StatusBar style="auto" />
+        </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

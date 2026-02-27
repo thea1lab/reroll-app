@@ -8,6 +8,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { useData } from '@/storage/data-context';
 import { Layout, Radius, Spacing } from '@/constants/theme';
 import { ContentContainer } from '@/components/content-container';
+import { useLanguage } from '@/contexts/language-context';
 import type { Difficulty } from '@/constants/types';
 
 const DIFFICULTIES: Difficulty[] = ['Easy', 'Medium', 'Hard'];
@@ -22,6 +23,7 @@ export default function RecipeFormModal() {
   const success = useThemeColor({}, 'success');
   const warning = useThemeColor({}, 'warning');
   const danger = useThemeColor({}, 'danger');
+  const { t } = useLanguage();
 
   const existing = recipeId ? recipes.find((r) => r.id === recipeId) : null;
   const [name, setName] = useState(existing?.name ?? '');
@@ -31,7 +33,7 @@ export default function RecipeFormModal() {
   const [steps, setSteps] = useState(existing?.steps ?? '');
 
   const isValid = name.trim().length > 0 && time.trim().length > 0;
-  const title = existing ? 'Edit Recipe' : 'New Recipe';
+  const title = existing ? t('recipeForm.editTitle') : t('recipeForm.newTitle');
 
   const difficultyColor = (d: Difficulty) => (d === 'Easy' ? success : d === 'Medium' ? warning : danger);
 
@@ -64,7 +66,7 @@ export default function RecipeFormModal() {
         title={title}
         leftIcon={
           <ThemedText style={styles.headerBtn} lightColor={tint} darkColor={tint}>
-            Cancel
+            {t('common.cancel')}
           </ThemedText>
         }
         onLeftPress={() => router.back()}
@@ -73,7 +75,7 @@ export default function RecipeFormModal() {
             style={[styles.headerBtn, styles.headerBtnBold, { opacity: isValid ? 1 : 0.4 }]}
             lightColor={tint}
             darkColor={tint}>
-            Save
+            {t('common.save')}
           </ThemedText>
         }
         onRightPress={handleSave}
@@ -81,20 +83,20 @@ export default function RecipeFormModal() {
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <ContentContainer maxWidth={Layout.modalMaxWidth}>
           <FormField
-            label="Recipe Name"
-            placeholder="e.g. Chicken Stir-Fry"
+            label={t('recipeForm.nameLabel')}
+            placeholder={t('recipeForm.namePlaceholder')}
             value={name}
             onChangeText={setName}
             autoFocus
           />
           <FormField
-            label="Estimated Time (minutes)"
-            placeholder="e.g. 30"
+            label={t('recipeForm.timeLabel')}
+            placeholder={t('recipeForm.timePlaceholder')}
             value={time}
             onChangeText={setTime}
             keyboardType="numeric"
           />
-          <ThemedText style={styles.label}>Difficulty</ThemedText>
+          <ThemedText style={styles.label}>{t('recipeForm.difficultyLabel')}</ThemedText>
           <View style={styles.difficultyRow}>
             {DIFFICULTIES.map((d) => {
               const active = difficulty === d;
@@ -111,23 +113,23 @@ export default function RecipeFormModal() {
                   ]}
                   onPress={() => setDifficulty(d)}>
                   <ThemedText style={[styles.diffText, { color }]} lightColor={color} darkColor={color}>
-                    {d}
+                    {t(`difficulty.${d}`)}
                   </ThemedText>
                 </Pressable>
               );
             })}
           </View>
           <FormField
-            label="Ingredients"
-            placeholder="One ingredient per line"
+            label={t('recipeForm.ingredientsLabel')}
+            placeholder={t('recipeForm.ingredientsPlaceholder')}
             value={ingredients}
             onChangeText={setIngredients}
             multiline
             numberOfLines={5}
           />
           <FormField
-            label="Steps"
-            placeholder="One step per line"
+            label={t('recipeForm.stepsLabel')}
+            placeholder={t('recipeForm.stepsPlaceholder')}
             value={steps}
             onChangeText={setSteps}
             multiline

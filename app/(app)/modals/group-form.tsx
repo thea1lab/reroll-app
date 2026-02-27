@@ -9,6 +9,7 @@ import { useData } from '@/storage/data-context';
 import { Layout, Radius, Spacing } from '@/constants/theme';
 import { ContentContainer } from '@/components/content-container';
 import { useResponsive } from '@/hooks/use-responsive';
+import { useLanguage } from '@/contexts/language-context';
 const GRID_GAP = Spacing.sm;
 
 const FOOD_EMOJIS = [
@@ -24,6 +25,7 @@ export default function GroupFormModal() {
   const tint = useThemeColor({}, 'tint');
   const tintLight = useThemeColor({}, 'tintLight');
   const border = useThemeColor({}, 'border');
+  const { t } = useLanguage();
 
   const { width: screenWidth, emojiColumns } = useResponsive();
   const effectiveWidth = Math.min(screenWidth, Layout.modalMaxWidth);
@@ -36,7 +38,7 @@ export default function GroupFormModal() {
   const [emoji, setEmoji] = useState(existing?.emoji ?? '🍳');
 
   const isValid = name.trim().length > 0;
-  const title = existing ? 'Edit Group' : 'New Group';
+  const title = existing ? t('groupForm.editTitle') : t('groupForm.newTitle');
 
   const handleSave = () => {
     if (!isValid) return;
@@ -54,7 +56,7 @@ export default function GroupFormModal() {
         title={title}
         leftIcon={
           <ThemedText style={styles.headerBtn} lightColor={tint} darkColor={tint}>
-            Cancel
+            {t('common.cancel')}
           </ThemedText>
         }
         onLeftPress={() => router.back()}
@@ -63,7 +65,7 @@ export default function GroupFormModal() {
             style={[styles.headerBtn, styles.headerBtnBold, { opacity: isValid ? 1 : 0.4 }]}
             lightColor={tint}
             darkColor={tint}>
-            Save
+            {t('common.save')}
           </ThemedText>
         }
         onRightPress={handleSave}
@@ -71,13 +73,13 @@ export default function GroupFormModal() {
       <ScrollView contentContainerStyle={styles.content}>
         <ContentContainer maxWidth={Layout.modalMaxWidth}>
           <FormField
-            label="Group Name"
-            placeholder="e.g. Breakfast, Dinner..."
+            label={t('groupForm.nameLabel')}
+            placeholder={t('groupForm.namePlaceholder')}
             value={name}
             onChangeText={setName}
             autoFocus
           />
-          <ThemedText style={styles.label}>Emoji</ThemedText>
+          <ThemedText style={styles.label}>{t('groupForm.emojiLabel')}</ThemedText>
           <View style={styles.emojiGrid}>
             {FOOD_EMOJIS.map((e) => (
               <Pressable

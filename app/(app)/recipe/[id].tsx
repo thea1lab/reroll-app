@@ -9,6 +9,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { useData } from '@/storage/data-context';
 import { Radius, Spacing } from '@/constants/theme';
 import { ContentContainer } from '@/components/content-container';
+import { useLanguage } from '@/contexts/language-context';
 
 export default function RecipeDetailScreen() {
   const router = useRouter();
@@ -20,6 +21,7 @@ export default function RecipeDetailScreen() {
   const surface = useThemeColor({}, 'surface');
   const border = useThemeColor({}, 'border');
   const danger = useThemeColor({}, 'danger');
+  const { t } = useLanguage();
 
   const recipe = recipes.find((r) => r.id === id);
   if (!recipe) return null;
@@ -28,10 +30,10 @@ export default function RecipeDetailScreen() {
   const stepsList = recipe.steps.split('\n').filter((l) => l.trim());
 
   const handleDelete = () => {
-    Alert.alert('Delete Recipe', `Delete "${recipe.name}"?`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('recipe.deleteTitle'), t('recipe.deleteMessage', { name: recipe.name }), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: () => {
           deleteRecipe(recipe.id);
@@ -61,14 +63,14 @@ export default function RecipeDetailScreen() {
             <DifficultyBadge difficulty={recipe.difficulty} />
             <View style={styles.time}>
               <IconSymbol name="clock" size={18} color={iconColor} />
-              <ThemedText style={styles.timeText}>{recipe.estimatedTime} min</ThemedText>
+              <ThemedText style={styles.timeText}>{recipe.estimatedTime} {t('common.min')}</ThemedText>
             </View>
           </View>
 
           {ingredientsList.length > 0 && (
             <View style={[styles.section, { backgroundColor: surface, borderColor: border }]}>
               <ThemedText type="subtitle" style={styles.sectionTitle}>
-                Ingredients
+                {t('recipe.ingredients')}
               </ThemedText>
               {ingredientsList.map((item, i) => (
                 <View key={i} style={styles.bulletRow}>
@@ -82,7 +84,7 @@ export default function RecipeDetailScreen() {
           {stepsList.length > 0 && (
             <View style={[styles.section, { backgroundColor: surface, borderColor: border }]}>
               <ThemedText type="subtitle" style={styles.sectionTitle}>
-                Steps
+                {t('recipe.steps')}
               </ThemedText>
               {stepsList.map((step, i) => (
                 <View key={i} style={styles.stepRow}>
@@ -96,7 +98,7 @@ export default function RecipeDetailScreen() {
           <Pressable style={[styles.deleteBtn, { borderColor: danger }]} onPress={handleDelete}>
             <IconSymbol name="trash" size={18} color={danger} />
             <ThemedText style={styles.deleteText} lightColor={danger} darkColor={danger}>
-              Delete Recipe
+              {t('recipe.deleteRecipe')}
             </ThemedText>
           </Pressable>
         </ContentContainer>

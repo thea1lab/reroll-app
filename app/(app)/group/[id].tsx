@@ -13,6 +13,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { useData } from '@/storage/data-context';
 import { Layout, Radius, Spacing } from '@/constants/theme';
 import { useResponsive } from '@/hooks/use-responsive';
+import { useLanguage } from '@/contexts/language-context';
 import type { Difficulty, Recipe } from '@/constants/types';
 
 export default function GroupDetailScreen() {
@@ -26,6 +27,7 @@ export default function GroupDetailScreen() {
   const surface = useThemeColor({}, 'surface');
   const border = useThemeColor({}, 'border');
   const iconColor = useThemeColor({}, 'icon');
+  const { t } = useLanguage();
 
   const group = groups.find((g) => g.id === id);
   const filteredRecipes = getRecipesForGroup(id!, filter);
@@ -59,13 +61,13 @@ export default function GroupDetailScreen() {
       {filteredRecipes.length === 0 ? (
         <EmptyState
           icon="📝"
-          title={allRecipes.length === 0 ? 'No recipes yet' : 'No matching recipes'}
+          title={allRecipes.length === 0 ? t('group.emptyTitle') : t('group.noMatchTitle')}
           subtitle={
             allRecipes.length === 0
-              ? 'Add your first recipe to this group!'
-              : 'Try changing the difficulty filter.'
+              ? t('group.emptySubtitle')
+              : t('group.noMatchSubtitle')
           }
-          actionLabel={allRecipes.length === 0 ? 'Add Recipe' : undefined}
+          actionLabel={allRecipes.length === 0 ? t('group.addRecipe') : undefined}
           onAction={
             allRecipes.length === 0
               ? () => router.push({ pathname: '/modals/recipe-form', params: { groupId: group.id } })
@@ -88,7 +90,7 @@ export default function GroupDetailScreen() {
             style={[styles.addBtn, { borderColor: tint }]}
             onPress={() => router.push({ pathname: '/modals/recipe-form', params: { groupId: group.id } })}>
             <ThemedText style={styles.addBtnText} lightColor={tint} darkColor={tint}>
-              Add Recipe
+              {t('group.addRecipe')}
             </ThemedText>
           </Pressable>
           <RerollButton

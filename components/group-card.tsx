@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { useLanguage } from '@/contexts/language-context';
 import { Radius, Spacing } from '@/constants/theme';
 
 interface GroupCardProps {
@@ -18,6 +19,7 @@ export function GroupCard({ emoji, name, recipeCount, onPress, onLongPress }: Gr
   const surface = useThemeColor({}, 'surface');
   const border = useThemeColor({}, 'border');
   const scale = useSharedValue(1);
+  const { t } = useLanguage();
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -41,7 +43,7 @@ export function GroupCard({ emoji, name, recipeCount, onPress, onLongPress }: Gr
         {name}
       </ThemedText>
       <ThemedText style={styles.count} lightColor="#8B7355" darkColor="#A89585">
-        {recipeCount} {recipeCount === 1 ? 'recipe' : 'recipes'}
+        {t('recipeCount', { count: recipeCount })}
       </ThemedText>
     </AnimatedPressable>
   );

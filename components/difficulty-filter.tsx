@@ -1,6 +1,7 @@
 import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { useLanguage } from '@/contexts/language-context';
 import type { Difficulty } from '@/constants/types';
 import { Radius, Spacing } from '@/constants/theme';
 
@@ -9,18 +10,19 @@ interface DifficultyFilterProps {
   onChange: (value: Difficulty | null) => void;
 }
 
-const OPTIONS: { label: string; value: Difficulty | null }[] = [
-  { label: 'All', value: null },
-  { label: 'Easy', value: 'Easy' },
-  { label: 'Medium', value: 'Medium' },
-  { label: 'Hard', value: 'Hard' },
-];
-
 export function DifficultyFilter({ selected, onChange }: DifficultyFilterProps) {
   const tint = useThemeColor({}, 'tint');
   const tintLight = useThemeColor({}, 'tintLight');
   const border = useThemeColor({}, 'border');
   const text = useThemeColor({}, 'text');
+  const { t } = useLanguage();
+
+  const OPTIONS: { label: string; value: Difficulty | null }[] = [
+    { label: t('difficulty.all'), value: null },
+    { label: t('difficulty.Easy'), value: 'Easy' },
+    { label: t('difficulty.Medium'), value: 'Medium' },
+    { label: t('difficulty.Hard'), value: 'Hard' },
+  ];
 
   return (
     <ScrollView

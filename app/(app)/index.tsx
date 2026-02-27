@@ -9,6 +9,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { useData } from '@/storage/data-context';
 import { Radius, Spacing } from '@/constants/theme';
 import { useResponsive } from '@/hooks/use-responsive';
+import { useLanguage } from '@/contexts/language-context';
 import type { Group } from '@/constants/types';
 
 export default function HomeScreen() {
@@ -18,23 +19,24 @@ export default function HomeScreen() {
   const tint = useThemeColor({}, 'tint');
   const iconColor = useThemeColor({}, 'icon');
   const { groupColumns } = useResponsive();
+  const { t } = useLanguage();
 
   const handleLongPress = (group: Group) => {
     Alert.alert(group.name, undefined, [
       {
-        text: 'Edit',
+        text: t('common.edit'),
         onPress: () => router.push({ pathname: '/modals/group-form', params: { groupId: group.id } }),
       },
       {
-        text: 'Delete',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: () =>
-          Alert.alert('Delete Group', `Delete "${group.name}" and all its recipes?`, [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => deleteGroup(group.id) },
+          Alert.alert(t('home.deleteGroupTitle'), t('home.deleteGroupMessage', { name: group.name }), [
+            { text: t('common.cancel'), style: 'cancel' },
+            { text: t('common.delete'), style: 'destructive', onPress: () => deleteGroup(group.id) },
           ]),
       },
-      { text: 'Cancel', style: 'cancel' },
+      { text: t('common.cancel'), style: 'cancel' },
     ]);
   };
 
@@ -55,16 +57,16 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <ScreenHeader
         title="Reroll"
-        subtitle="What are we cooking today?"
+        subtitle={t('home.subtitle')}
         rightIcon={<IconSymbol name="gearshape" size={22} color={iconColor} />}
         onRightPress={() => router.push('/modals/settings')}
       />
       {groups.length === 0 ? (
         <EmptyState
           icon="🍽️"
-          title="No groups yet"
-          subtitle="Create your first recipe group to get started!"
-          actionLabel="Create Group"
+          title={t('home.emptyTitle')}
+          subtitle={t('home.emptySubtitle')}
+          actionLabel={t('home.createGroup')}
           onAction={() => router.push('/modals/group-form')}
         />
       ) : (

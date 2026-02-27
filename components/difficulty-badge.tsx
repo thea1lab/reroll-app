@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { useLanguage } from '@/contexts/language-context';
 import type { Difficulty } from '@/constants/types';
 import { Radius, Spacing } from '@/constants/theme';
 
@@ -12,6 +13,7 @@ interface DifficultyBadgeProps {
 export function DifficultyBadge({ difficulty, size = 'normal' }: DifficultyBadgeProps) {
   const colorKey = difficulty === 'Easy' ? 'success' : difficulty === 'Medium' ? 'warning' : 'danger';
   const color = useThemeColor({}, colorKey);
+  const { t } = useLanguage();
 
   return (
     <View style={[styles.badge, { borderColor: color }, size === 'small' && styles.badgeSmall]}>
@@ -19,7 +21,7 @@ export function DifficultyBadge({ difficulty, size = 'normal' }: DifficultyBadge
         style={[styles.text, { color }, size === 'small' && styles.textSmall]}
         lightColor={color}
         darkColor={color}>
-        {difficulty}
+        {t(`difficulty.${difficulty}`)}
       </ThemedText>
     </View>
   );

@@ -21,6 +21,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { useData } from '@/storage/data-context';
 import { Layout, Radius, Spacing } from '@/constants/theme';
 import { useResponsive } from '@/hooks/use-responsive';
+import { useLanguage } from '@/contexts/language-context';
 import type { Difficulty, Recipe } from '@/constants/types';
 
 type Phase = 'shuffle' | 'reveal';
@@ -34,6 +35,7 @@ export default function RerollModal() {
   const surface = useThemeColor({}, 'surface');
   const border = useThemeColor({}, 'border');
   const bg = useThemeColor({}, 'background');
+  const { t } = useLanguage();
 
   const { isTablet } = useResponsive();
   const diffFilter = (difficulty as Difficulty) || null;
@@ -168,7 +170,7 @@ export default function RerollModal() {
           </ThemedText>
           {phase === 'reveal' && currentRecipe && (
             <ThemedText style={styles.cardMeta} lightColor="#8B7355" darkColor="#A89585">
-              {currentRecipe.estimatedTime} min • {currentRecipe.difficulty}
+              {currentRecipe.estimatedTime} {t('common.min')} • {t(`difficulty.${currentRecipe.difficulty}`)}
             </ThemedText>
           )}
         </Animated.View>
@@ -176,7 +178,7 @@ export default function RerollModal() {
         {phase === 'reveal' && isSingleRecipe && (
           <Animated.View entering={FadeIn.delay(400)}>
             <ThemedText style={styles.destinyText} lightColor="#8B7355" darkColor="#A89585">
-              Destiny has spoken!
+              {t('reroll.destiny')}
             </ThemedText>
           </Animated.View>
         )}
@@ -195,7 +197,7 @@ export default function RerollModal() {
               }, 100);
             }}>
             <ThemedText style={styles.cookBtnText} lightColor="#fff" darkColor="#fff">
-              Let's Cook!
+              {t('reroll.letsCook')}
             </ThemedText>
           </Pressable>
           {!isSingleRecipe && (
@@ -230,7 +232,7 @@ export default function RerollModal() {
                 shuffleInterval.current = setTimeout(step, speed);
               }}>
               <ThemedText style={styles.rerollAgainText} lightColor={tint} darkColor={tint}>
-                Reroll Again 🎲
+                {t('reroll.rerollAgain')}
               </ThemedText>
             </Pressable>
           )}

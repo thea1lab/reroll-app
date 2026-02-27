@@ -3,6 +3,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-na
 import * as Haptics from 'expo-haptics';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { useLanguage } from '@/contexts/language-context';
 import { Radius, Spacing } from '@/constants/theme';
 
 interface RerollButtonProps {
@@ -13,9 +14,12 @@ interface RerollButtonProps {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export function RerollButton({ onPress, disabled, label = 'Reroll' }: RerollButtonProps) {
+export function RerollButton({ onPress, disabled, label }: RerollButtonProps) {
   const tint = useThemeColor({}, 'tint');
   const scale = useSharedValue(1);
+  const { t } = useLanguage();
+
+  const displayLabel = label ?? t('reroll.reroll');
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -44,7 +48,7 @@ export function RerollButton({ onPress, disabled, label = 'Reroll' }: RerollButt
       }}
       onPress={handlePress}>
       <ThemedText style={styles.label} lightColor="#fff" darkColor="#fff">
-        {label} 🎲
+        {displayLabel} 🎲
       </ThemedText>
     </AnimatedPressable>
   );
