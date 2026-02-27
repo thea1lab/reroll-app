@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
@@ -8,15 +8,10 @@ import { useAuth } from '@/contexts/auth-context';
 import { useLanguage } from '@/contexts/language-context';
 import { Radius, Spacing } from '@/constants/theme';
 
-const LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'pt', label: 'Português' },
-];
-
 export default function LandingScreen() {
   const insets = useSafeAreaInsets();
   const { signInWithGoogle } = useAuth();
-  const { t, locale, setLocale } = useLanguage();
+  const { t } = useLanguage();
   const [isSigningIn, setIsSigningIn] = useState(false);
 
   const bg = useThemeColor({}, 'background');
@@ -24,7 +19,6 @@ export default function LandingScreen() {
   const tintLight = useThemeColor({}, 'tintLight');
   const surface = useThemeColor({}, 'surface');
   const border = useThemeColor({}, 'border');
-  const text = useThemeColor({}, 'text');
   const textSecondary = useThemeColor({}, 'textSecondary');
 
   const FEATURES = [
@@ -66,44 +60,15 @@ export default function LandingScreen() {
       <View pointerEvents="none" style={[styles.blobTop, { backgroundColor: tintLight }]} />
       <View pointerEvents="none" style={[styles.blobMid, { backgroundColor: tintLight }]} />
 
-      <Animated.View entering={FadeInDown.duration(550)} style={styles.languageSection}>
-        <ThemedText style={[styles.languageLabel, { color: textSecondary }]}>{t('settings.language')}</ThemedText>
-        <View style={styles.languageRow}>
-          {LANGUAGES.map((lang) => {
-            const active = locale === lang.code;
-            return (
-              <Pressable
-                key={lang.code}
-                style={[
-                  styles.langPill,
-                  {
-                    backgroundColor: active ? tintLight : surface,
-                    borderColor: active ? tint : border,
-                  },
-                ]}
-                onPress={() => setLocale(lang.code)}>
-                <ThemedText
-                  style={[styles.langText, { color: active ? tint : text }]}
-                  lightColor={active ? tint : text}
-                  darkColor={active ? tint : text}>
-                  {lang.label}
-                </ThemedText>
-              </Pressable>
-            );
-          })}
-        </View>
-      </Animated.View>
-
       <Animated.View
         entering={FadeInDown.delay(120).duration(600)}
         style={[styles.hero, { backgroundColor: surface, borderColor: border }]}>
-        <View style={[styles.heroBadge, { backgroundColor: tintLight, borderColor: border }]}>
-          <ThemedText style={styles.heroEmoji}>🎲</ThemedText>
-          <ThemedText style={[styles.heroBadgeText, { color: tint }]}>{t('landing.badge')}</ThemedText>
+        <View style={styles.heroTitleRow}>
+          <Image source={require('@/assets/images/icon.png')} style={styles.heroIcon} />
+          <ThemedText type="title" style={styles.heroTitle}>
+            {t('landing.title')}
+          </ThemedText>
         </View>
-        <ThemedText type="title" style={styles.heroTitle}>
-          {t('landing.title')}
-        </ThemedText>
         <ThemedText style={[styles.heroSubtitle, { color: textSecondary }]}>{t('landing.subtitle')}</ThemedText>
       </Animated.View>
 
@@ -149,6 +114,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    flexGrow: 1,
+    justifyContent: 'center',
     paddingHorizontal: Spacing.lg,
     gap: Spacing.lg,
     overflow: 'hidden',
@@ -171,29 +138,6 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     opacity: 0.4,
   },
-  languageSection: {
-    marginBottom: Spacing.xs,
-  },
-  languageLabel: {
-    fontSize: 13,
-    marginBottom: Spacing.sm,
-    fontWeight: '600',
-  },
-  languageRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  langPill: {
-    flex: 1,
-    borderRadius: Radius.xl,
-    borderWidth: 1.5,
-    paddingVertical: Spacing.sm,
-    alignItems: 'center',
-  },
-  langText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
   hero: {
     alignItems: 'center',
     borderRadius: Radius.xl,
@@ -202,23 +146,15 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xl,
     gap: Spacing.sm,
   },
-  heroBadge: {
+  heroTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    borderRadius: Radius.xl,
-    borderWidth: 1,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
   },
-  heroEmoji: {
-    fontSize: 26,
-  },
-  heroBadgeText: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
+  heroIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 8,
   },
   heroTitle: {
     fontSize: 38,
