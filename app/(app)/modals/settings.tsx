@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   spacer: {
     flex: 1,
-    marginVertical: Spacing.xs,
+    marginVertical: Spacing.lg,
   },
   signOutBtn: {
     flexDirection: 'row',
