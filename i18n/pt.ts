@@ -88,6 +88,14 @@ export default {
     ingredientsPlaceholder: 'Um ingrediente por linha',
     stepsLabel: 'Modo de Preparo',
     stepsPlaceholder: 'Um passo por linha',
+    copyPrompt: 'Copiar Prompt IA',
+    copied: 'Copiado!',
+    importJson: 'Importar JSON',
+    import: 'Importar',
+    pasteJsonPlaceholder: 'Cole o JSON da sua IA aqui...',
+    importError: 'JSON inválido',
+    importErrorMessage:
+      'Não foi possível interpretar o JSON. Verifique se está no formato esperado.',
   },
 
   // Reroll modal

@@ -88,6 +88,14 @@ export default {
     ingredientsPlaceholder: 'One ingredient per line',
     stepsLabel: 'Steps',
     stepsPlaceholder: 'One step per line',
+    copyPrompt: 'Copy AI Prompt',
+    copied: 'Copied!',
+    importJson: 'Import JSON',
+    import: 'Import',
+    pasteJsonPlaceholder: 'Paste the JSON from your AI here...',
+    importError: 'Invalid JSON',
+    importErrorMessage:
+      'Could not parse the JSON. Make sure it matches the expected format.',
   },
 
   // Reroll modal
