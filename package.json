@@ -1,14 +1,24 @@
 {
   "name": "ricetta.a1lab.com.br",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
+    "android:debug-apk": "cd android && ./gradlew assembleDebug",
+    "android:install-debug": "cd android && ./gradlew installDebug",
+    "android:release": "cd android && ./gradlew assembleRelease",
+    "android:install-release": "cd android && ./gradlew installRelease",
+    "android:release-bundle": "cd android && ./gradlew app:bundleRelease",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "bump": "node ./scripts/bump-version.js",
+    "bump:minor": "node ./scripts/bump-version.js minor",
+    "bump:major": "node ./scripts/bump-version.js major"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
