@@ -13,15 +13,15 @@ export default {
   // Landing
   landing: {
     badge: 'Roleta de Receitas',
-    title: 'Reroll',
+    title: 'Ricetta',
     subtitle: 'O que vamos cozinhar hoje?',
     signIn: 'Entrar com Google',
     signInFailed: 'Falha no Login',
     signInError: 'Algo deu errado.',
     feature1Title: 'Organize Suas Receitas',
     feature1Desc: 'Agrupe suas receitas favoritas em coleções personalizadas.',
-    feature2Title: 'Reroll & Descubra',
-    feature2Desc: 'Não sabe o que cozinhar? Deixe o Reroll escolher pra você!',
+    feature2Title: 'Escolha Aleatória',
+    feature2Desc: 'Não sabe o que cozinhar? Deixe o Ricetta escolher por você.',
     feature3Title: 'Cozinhe com Confiança',
     feature3Desc: 'Instruções passo a passo para cada receita.',
   },
@@ -98,12 +98,12 @@ export default {
       'Não foi possível interpretar o JSON. Verifique se está no formato esperado.',
   },
 
-  // Reroll modal
-  reroll: {
+  // Ricetta modal
+  ricetta: {
     destiny: 'O destino falou!',
     letsCook: 'Vamos Cozinhar!',
-    rerollAgain: 'Sortear de Novo 🎲',
-    reroll: 'Sortear',
+    ricettaAgain: 'Sortear de Novo 🎲',
+    ricetta: 'Sortear',
   },
 
   // Difficulty

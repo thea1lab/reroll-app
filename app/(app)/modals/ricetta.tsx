@@ -26,7 +26,7 @@ import type { Difficulty, Recipe } from '@/constants/types';
 
 type Phase = 'shuffle' | 'reveal';
 
-export default function RerollModal() {
+export default function RicettaModal() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { groupId, difficulty } = useLocalSearchParams<{ groupId: string; difficulty?: string }>();
@@ -178,7 +178,7 @@ export default function RerollModal() {
         {phase === 'reveal' && isSingleRecipe && (
           <Animated.View entering={FadeIn.delay(400)}>
             <ThemedText style={styles.destinyText} lightColor="#8B7355" darkColor="#A89585">
-              {t('reroll.destiny')}
+              {t('ricetta.destiny')}
             </ThemedText>
           </Animated.View>
         )}
@@ -197,12 +197,12 @@ export default function RerollModal() {
               }, 100);
             }}>
             <ThemedText style={styles.cookBtnText} lightColor="#fff" darkColor="#fff">
-              {t('reroll.letsCook')}
+              {t('ricetta.letsCook')}
             </ThemedText>
           </Pressable>
           {!isSingleRecipe && (
             <Pressable
-              style={[styles.rerollAgainBtn, { borderColor: tint }]}
+              style={[styles.ricettaAgainBtn, { borderColor: tint }]}
               onPress={() => {
                 setPhase('shuffle');
                 setFinalRecipe(null);
@@ -231,8 +231,8 @@ export default function RerollModal() {
                 };
                 shuffleInterval.current = setTimeout(step, speed);
               }}>
-              <ThemedText style={styles.rerollAgainText} lightColor={tint} darkColor={tint}>
-                {t('reroll.rerollAgain')}
+              <ThemedText style={styles.ricettaAgainText} lightColor={tint} darkColor={tint}>
+                {t('ricetta.ricettaAgain')}
               </ThemedText>
             </Pressable>
           )}
@@ -309,13 +309,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
   },
-  rerollAgainBtn: {
+  ricettaAgainBtn: {
     paddingVertical: Spacing.sm + 4,
     borderRadius: Radius.md,
     borderWidth: 1.5,
     alignItems: 'center',
   },
-  rerollAgainText: {
+  ricettaAgainText: {
     fontSize: 16,
     fontWeight: '600',
   },

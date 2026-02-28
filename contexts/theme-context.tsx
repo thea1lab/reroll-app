@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { useColorScheme } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const STORAGE_KEY = '@reroll/theme';
+const STORAGE_KEY = '@ricetta/theme';
 
 type ThemePreference = 'light' | 'dark' | 'system';
 

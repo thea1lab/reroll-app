@@ -6,7 +6,7 @@ import { ScreenHeader } from '@/components/screen-header';
 import { RecipeCard } from '@/components/recipe-card';
 import { DifficultyFilter } from '@/components/difficulty-filter';
 import { EmptyState } from '@/components/empty-state';
-import { RerollButton } from '@/components/reroll-button';
+import { RicettaButton } from '@/components/ricetta-button';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
@@ -101,10 +101,10 @@ export default function GroupDetailScreen() {
               {t('group.addRecipe')}
             </ThemedText>
           </Pressable>
-          <RerollButton
+          <RicettaButton
             onPress={() =>
               router.push({
-                pathname: '/modals/reroll',
+                pathname: '/modals/ricetta',
                 params: { groupId: group.id, difficulty: filter ?? '' },
               })
             }

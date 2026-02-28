@@ -56,7 +56,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <ScreenHeader
-        title="Reroll"
+        title="Ricetta"
         subtitle={t('home.subtitle')}
         rightIcon={<IconSymbol name="gearshape" size={22} color={iconColor} />}
         onRightPress={() => router.push('/modals/settings')}

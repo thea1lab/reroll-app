@@ -17,7 +17,7 @@ export default function AppLayout() {
         <Stack.Screen name="recipe/[id]" />
         <Stack.Screen name="modals/group-form" options={{ presentation: 'modal' }} />
         <Stack.Screen name="modals/recipe-form" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="modals/reroll" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
+        <Stack.Screen name="modals/ricetta" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
         <Stack.Screen name="modals/settings" options={{ presentation: 'modal' }} />
       </Stack>
     </DataProvider>

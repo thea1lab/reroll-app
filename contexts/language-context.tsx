@@ -3,7 +3,7 @@ import { getLocales } from 'expo-localization';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import translations, { type AppLocale } from '@/i18n';
 
-const STORAGE_KEY = '@reroll/language';
+const STORAGE_KEY = '@ricetta/language';
 
 type TranslateOptions = Record<string, string | number>;
 

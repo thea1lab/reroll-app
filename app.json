@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "Reroll",
-    "slug": "reroll.a1lab.com.br",
+    "name": "Ricetta",
+    "slug": "ricetta.a1lab.com.br",
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
-    "scheme": "rerolla1labcombr",
+    "scheme": "ricettaa1labcombr",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "android": {
-      "package": "br.com.a1lab.reroll",
+      "package": "br.com.a1lab.ricetta",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#FFF8F0",

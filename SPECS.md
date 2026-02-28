@@ -1,8 +1,8 @@
-## Reroll — Product Concept Document
+## Ricetta — Product Concept Document
 
 ### Overview
 
-**Reroll** is a mobile application focused on simplifying cooking decisions through organized recipe groups and randomized selection.
+**Ricetta** is a mobile application focused on simplifying cooking decisions through organized recipe groups and randomized selection.
 
 The core idea is to eliminate indecision by allowing users to organize their own recipes and instantly receive a random suggestion based on context, meal type, or difficulty level.
 
@@ -14,7 +14,7 @@ The application prioritizes simplicity, visual appeal, and engaging interaction.
 
 ### 1. Entry Experience
 
-When opening Reroll, the user does **not** immediately see recipes.
+When opening Ricetta, the user does **not** immediately see recipes.
 
 Instead, the first screen displays **Recipe Groups**.
 
@@ -79,7 +79,7 @@ Before randomizing, users may optionally filter by difficulty.
 
 ### 5. Random Selection (Core Feature)
 
-Inside any group, users can press **Reroll**.
+Inside any group, users can press **Ricetta**.
 
 The system will:
 
@@ -87,11 +87,11 @@ The system will:
 * Respect selected difficulty filters (if applied)
 * Present a clear cooking suggestion
 
-If the user is not satisfied, they can reroll again instantly.
+If the user is not satisfied, they can ricetta again instantly.
 
 Primary interaction:
 
-> Select group → Reroll → Cook.
+> Select group → Ricetta → Cook.
 
 ---
 
@@ -135,10 +135,10 @@ Recommended characteristics:
 
 * Smooth transitions
 * Soft motion
-* Rewarding reroll animation
+* Rewarding ricetta animation
 * Playful feedback when a recipe is selected
 
-The reroll action should feel entertaining, similar to revealing a surprise.
+The ricetta action should feel entertaining, similar to revealing a surprise.
 
 ---
 
@@ -147,7 +147,7 @@ The reroll action should feel entertaining, similar to revealing a surprise.
 ### Splash Screen
 
 * Clean background
-* Reroll logo centered
+* Ricetta logo centered
 * Soft entrance animation
 * Immediate brand recognition
 
@@ -196,9 +196,9 @@ Readable, distraction-free layout.
 
 ---
 
-### Reroll Interaction
+### Ricetta Interaction
 
-Pressing **Reroll** triggers:
+Pressing **Ricetta** triggers:
 
 * Animation
 * Random selection
@@ -210,7 +210,7 @@ The moment should feel satisfying and decisive.
 
 ## Product Philosophy
 
-Reroll is not a recipe database.
+Ricetta is not a recipe database.
 
 It is a **decision assistant**.
 
@@ -232,4 +232,4 @@ Help users answer one question quickly:
 
 with a single action:
 
-> **Reroll.**
+> **Ricetta.**

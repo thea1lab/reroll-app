@@ -6,7 +6,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { useLanguage } from '@/contexts/language-context';
 import { Radius, Spacing } from '@/constants/theme';
 
-interface RerollButtonProps {
+interface RicettaButtonProps {
   onPress: () => void;
   disabled?: boolean;
   label?: string;
@@ -14,12 +14,12 @@ interface RerollButtonProps {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export function RerollButton({ onPress, disabled, label }: RerollButtonProps) {
+export function RicettaButton({ onPress, disabled, label }: RicettaButtonProps) {
   const tint = useThemeColor({}, 'tint');
   const scale = useSharedValue(1);
   const { t } = useLanguage();
 
-  const displayLabel = label ?? t('reroll.reroll');
+  const displayLabel = label ?? t('ricetta.ricetta');
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],

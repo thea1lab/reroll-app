@@ -13,15 +13,15 @@ export default {
   // Landing
   landing: {
     badge: 'Recipe Roulette',
-    title: 'Reroll',
+    title: 'Ricetta',
     subtitle: 'What should we cook today?',
     signIn: 'Sign in with Google',
     signInFailed: 'Sign-In Failed',
     signInError: 'Something went wrong.',
     feature1Title: 'Organize Your Recipes',
     feature1Desc: 'Group your favorite recipes into custom collections.',
-    feature2Title: 'Reroll & Discover',
-    feature2Desc: "Can't decide what to cook? Let Reroll pick for you!",
+    feature2Title: 'Random Pick',
+    feature2Desc: 'Not sure what to cook? Let Ricetta choose one for you.',
     feature3Title: 'Cook with Confidence',
     feature3Desc: 'Step-by-step instructions for every recipe.',
   },
@@ -98,12 +98,12 @@ export default {
       'Could not parse the JSON. Make sure it matches the expected format.',
   },
 
-  // Reroll modal
-  reroll: {
+  // Ricetta modal
+  ricetta: {
     destiny: 'Destiny has spoken!',
     letsCook: "Let's Cook!",
-    rerollAgain: 'Reroll Again 🎲',
-    reroll: 'Reroll',
+    ricettaAgain: 'Ricetta Again 🎲',
+    ricetta: 'Ricetta',
   },
 
   // Difficulty

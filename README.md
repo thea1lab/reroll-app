@@ -1,4 +1,4 @@
-# Reroll App
+# Ricetta App
 
 Mobile app to organize recipe groups and pick what to cook.
 
@@ -14,7 +14,7 @@ npx expo start
 - Groups
 - Group Recipes
 - Recipe Details
-- Reroll Modal
+- Ricetta Modal
 
 ## Tech
 
