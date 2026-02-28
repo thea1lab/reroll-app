@@ -39,7 +39,6 @@ export default function SettingsModal() {
         style: 'destructive',
         onPress: async () => {
           await signOut();
-          router.dismissAll();
         },
       },
     ]);
